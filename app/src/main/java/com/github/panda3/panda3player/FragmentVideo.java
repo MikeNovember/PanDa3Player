@@ -1,13 +1,16 @@
 package com.github.panda3.panda3player;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -19,12 +22,12 @@ public class FragmentVideo extends Fragment {
     private VideoView videoView;
     private int position = 0;
     private MediaController mediaController;
-
+    private Button newActivityButton;
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.video_fragment, container, false);
-
         videoView = (VideoView) view.findViewById(R.id.videoView);
 
         // Set the media controller buttons
@@ -33,12 +36,9 @@ public class FragmentVideo extends Fragment {
 
             // Set the videoView that acts as the anchor for the MediaController.
             mediaController.setAnchorView(videoView);
-
-
             // Set MediaController for VideoView
             videoView.setMediaController(mediaController);
         }
-
 
         try {
             // ID of video file.
@@ -49,26 +49,20 @@ public class FragmentVideo extends Fragment {
             Log.e("Error", e.getMessage());
             e.printStackTrace();
         }
-
         videoView.requestFocus();
-
-
         // When the video file ready for playback.
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             public void onPrepared(MediaPlayer mediaPlayer) {
 
-
                 videoView.seekTo(position);
                 if (position == 0) {
                     videoView.start();
                 }
-
                 // When video Screen change size.
                 mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                     @Override
                     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-
                         // Re-Set the videoView that acts as the anchor for the MediaController
                         mediaController.setAnchorView(videoView);
                     }
@@ -82,8 +76,20 @@ public class FragmentVideo extends Fragment {
             }
         });
 
-
+        newActivityButton = (Button) view.findViewById(R.id.fullscreenVideo);
+        newActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startFullScreenActivity(view);
+            }
+        });
         return view;
+    }
+
+    private void startFullScreenActivity(View view) {
+        Log.i(LOG_TAG, "FullScreen enabled");
+        Intent intentList = new Intent(getActivity(), FullscreenActivity.class);
+        startActivity(intentList);
     }
 
 
@@ -94,6 +100,14 @@ public class FragmentVideo extends Fragment {
         int resID = this.getResources().getIdentifier(resName, "raw", pkgName);
         Log.i("AndroidVideoView", "Res Name: " + resName + "==> Res ID = " + resID);
         return resID;
+    }
+
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //you can set the title for your toolbar here for different fragments different titles
+        getActivity().setTitle("Video Player");
     }
 
 
