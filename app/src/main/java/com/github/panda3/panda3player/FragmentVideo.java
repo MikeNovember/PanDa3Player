@@ -42,8 +42,9 @@ public class FragmentVideo extends Fragment {
 
         try {
             // ID of video file.
-            int id = this.getRawResIdByName("myvideo");
-            videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + id));
+            //int id = this.getRawResIdByName("myvideo");
+            //videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + id));
+            videoView.setVideoURI(Uri.parse(uri));
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -85,6 +86,12 @@ public class FragmentVideo extends Fragment {
         });
         return view;
     }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    private String uri;
 
     private void startFullScreenActivity(View view) {
         Log.i(LOG_TAG, "FullScreen enabled");

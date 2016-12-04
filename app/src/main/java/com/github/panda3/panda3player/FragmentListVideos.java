@@ -1,6 +1,9 @@
 package com.github.panda3.panda3player;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FragmentListVideos extends Fragment {
+public class FragmentListVideos extends ListFragment {
 
     private ListView list;
     private List<String> exampleList;
@@ -70,22 +74,23 @@ public class FragmentListVideos extends Fragment {
             Log.d("PERMISSIONS","NO ACCES TO SD CARD !!!!");
         }
 
-
-
-        list = (ListView) view.findViewById(R.id.videosList);
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, exampleList);
-        list.setAdapter(arrayAdapter);
+        setListAdapter(new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, exampleList));
 
         return view;
     }
 
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Browse Video");
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((Activity)context).setTitle("Browse Video");
+    }
+
+    public void onListItemClick(ListView lv, View v, final int position, long id) {
+        super.onListItemClick(lv, v, position, id);
+        Intent intentText = new Intent(getContext(),MainActivity.class);
+        intentText.putExtra("uri", exampleList.get(position) );
+        startActivity(intentText);
     }
 
     @Override
@@ -99,7 +104,7 @@ public class FragmentListVideos extends Fragment {
                     Log.d("PERMISSIONS","ok");
                     getAccesToSDCard = true;
                 } else {
-                    Log.d("PERMISSIONS","danied");
+                    Log.d("PERMISSIONS","denied");
                 }
                 return;
             }

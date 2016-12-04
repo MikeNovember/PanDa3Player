@@ -1,6 +1,7 @@
 package com.github.panda3.panda3player;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -134,11 +135,11 @@ public class FullscreenActivity extends AppCompatActivity {
             videoView.setMediaController(mediaController);
         }
 
+        Intent intent = getIntent();
+        String videoUri = intent.getStringExtra("uri");
 
         try {
-            // ID of video file.
-            int id = this.getRawResIdByName("myvideo");
-            videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + id));
+            videoView.setVideoURI(Uri.parse(videoUri));
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
