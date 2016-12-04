@@ -1,8 +1,16 @@
 package com.github.panda3.panda3player;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +25,8 @@ public class FragmentListVideos extends Fragment {
 
     private ListView list;
     private List<String> exampleList;
+    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 5;
+    boolean getAccesToSDCard = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -26,9 +36,40 @@ public class FragmentListVideos extends Fragment {
 
         exampleList = new ArrayList<>();
 
-        exampleList.add("asd");
-        exampleList.add("qwe");
-        exampleList.add("zxc");
+        if (ContextCompat.checkSelfPermission(getContext(),  Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+
+            } else {
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+
+            }
+        }else{
+            getAccesToSDCard = true;
+        }
+
+        if(getAccesToSDCard){
+            Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            String[] projection = { MediaStore.Video.VideoColumns.DATA };
+            Cursor c = getActivity().getApplicationContext().getContentResolver().query(uri, projection, null, null, null);
+            int vidsCount = 0;
+            if (c != null) {
+                vidsCount = c.getCount();
+                while (c.moveToNext()) {
+                   // Log.d("VIDEO", c.getString(0));
+                    exampleList.add(c.getString(0));
+                }
+                c.close();
+            }
+        }else{
+            Log.d("PERMISSIONS","NO ACCES TO SD CARD !!!!");
+        }
+
 
 
         list = (ListView) view.findViewById(R.id.videosList);
@@ -45,5 +86,23 @@ public class FragmentListVideos extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Browse Video");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("PERMISSIONS","ok");
+                    getAccesToSDCard = true;
+                } else {
+                    Log.d("PERMISSIONS","danied");
+                }
+                return;
+            }
+        }
     }
 }
