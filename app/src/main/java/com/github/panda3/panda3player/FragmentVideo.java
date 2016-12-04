@@ -76,6 +76,12 @@ public class FragmentVideo extends Fragment {
             }
         });
 
+        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                return true;
+            }
+        });
+
 
         return view;
     }
@@ -115,4 +121,13 @@ public class FragmentVideo extends Fragment {
             videoView.seekTo(position);
         }
     }
+
+    /*@Override
+    public void onStop() {
+        super.onStop();
+        if (loadingDlg != null) {
+            loadingDlg.dismiss();
+            loadingDlg = null;
+        }
+    }*/
 }
