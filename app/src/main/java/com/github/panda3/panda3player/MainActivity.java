@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private Button newActivityButton;
     Context context;
+    Intent intent;
 
 
     @Override
@@ -28,11 +29,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         context = getApplicationContext();
+        intent = getIntent();
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
 
         FragmentVideo fragmentA = new FragmentVideo();
+        fragmentA.setUri(intent.getStringExtra("uri"));
 
         transaction.add(R.id.fragment_placeholder, fragmentA);
         transaction.commit();

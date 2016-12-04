@@ -1,6 +1,7 @@
 package com.github.panda3.panda3player;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -76,6 +78,17 @@ public class FragmentListVideos extends Fragment {
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, exampleList);
         list.setAdapter(arrayAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position,
+                                    long arg3)
+            {
+                Intent intentText = new Intent(getContext(),MainActivity.class);
+                intentText.putExtra("uri", exampleList.get(position) );
+                startActivity(intentText);
+            }
+        });
 
         return view;
     }

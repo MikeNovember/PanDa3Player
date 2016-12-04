@@ -25,10 +25,17 @@ public class FragmentVideo extends Fragment {
     private Button newActivityButton;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    private String uri;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.video_fragment, container, false);
         videoView = (VideoView) view.findViewById(R.id.videoView);
+
 
         // Set the media controller buttons
         if (mediaController == null) {
@@ -42,8 +49,8 @@ public class FragmentVideo extends Fragment {
 
         try {
             // ID of video file.
-            int id = this.getRawResIdByName("myvideo");
-            videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + id));
+          //  int id = this.getRawResIdByName("myvideo");
+            videoView.setVideoURI(Uri.parse(uri));
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
