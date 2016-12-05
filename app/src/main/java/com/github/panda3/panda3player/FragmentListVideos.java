@@ -31,6 +31,7 @@ public class FragmentListVideos extends ListFragment {
     private List<String> exampleList;
     final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 5;
     boolean getAccesToSDCard = false;
+    NavDrawerActivity parentActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,14 +84,13 @@ public class FragmentListVideos extends ListFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((Activity)context).setTitle("Browse Video");
+        parentActivity = (NavDrawerActivity) context;
+        parentActivity.setTitle("Browse Video");
     }
 
     public void onListItemClick(ListView lv, View v, final int position, long id) {
         super.onListItemClick(lv, v, position, id);
-        Intent intentText = new Intent(getContext(),MainActivity.class);
-        intentText.putExtra("uri", exampleList.get(position) );
-        startActivity(intentText);
+        parentActivity.playVideo(exampleList.get(position), 0);
     }
 
     @Override

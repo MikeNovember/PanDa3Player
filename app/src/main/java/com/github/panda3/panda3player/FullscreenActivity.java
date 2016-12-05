@@ -106,7 +106,6 @@ public class FullscreenActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.videoViewFS);
 
-
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,10 +136,11 @@ public class FullscreenActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String videoUri = intent.getStringExtra("uri");
+        position = intent.getIntExtra("position", 0);
 
         try {
             videoView.setVideoURI(Uri.parse(videoUri));
-
+            videoView.seekTo(position);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();
@@ -148,13 +148,10 @@ public class FullscreenActivity extends AppCompatActivity {
 
         videoView.requestFocus();
 
-
         // When the video file ready for playback.
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             public void onPrepared(MediaPlayer mediaPlayer) {
-
-
                 videoView.seekTo(position);
                 if (position == 0) {
                     videoView.start();
@@ -173,7 +170,6 @@ public class FullscreenActivity extends AppCompatActivity {
             }
         });
 
-
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frameParent);
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,16 +178,6 @@ public class FullscreenActivity extends AppCompatActivity {
             }
         });
     }
-
-    // Find ID corresponding to the name of the resource (in the directory raw).
-    public int getRawResIdByName(String resName) {
-        String pkgName = this.getPackageName();
-        // Return 0 if not found.
-        int resID = this.getResources().getIdentifier(resName, "raw", pkgName);
-        Log.i("AndroidVideoView", "Res Name: " + resName + "==> Res ID = " + resID);
-        return resID;
-    }
-
 
     // When you change direction of phone, this method will be called.
     // It store the state of video (Current position)
@@ -204,7 +190,6 @@ public class FullscreenActivity extends AppCompatActivity {
         videoView.pause();
     }
 
-
     // After rotating the phone. This method is called.
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -213,6 +198,12 @@ public class FullscreenActivity extends AppCompatActivity {
         // Get saved position.
         position = savedInstanceState.getInt("CurrentPosition");
         videoView.seekTo(position);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 
     @Override

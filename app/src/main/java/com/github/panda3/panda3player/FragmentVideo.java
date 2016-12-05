@@ -23,7 +23,9 @@ public class FragmentVideo extends Fragment {
     private int position = 0;
     private MediaController mediaController;
     private Button newActivityButton;
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = "FRAGMENT VIDEO";
+    private String uri;
+    private long miliseconds = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,11 +43,7 @@ public class FragmentVideo extends Fragment {
         }
 
         try {
-            // ID of video file.
-            //int id = this.getRawResIdByName("myvideo");
-            //videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + id));
             videoView.setVideoURI(Uri.parse(uri));
-
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();
@@ -91,14 +89,17 @@ public class FragmentVideo extends Fragment {
         this.uri = uri;
     }
 
-    private String uri;
+    public void setPosition(int ms) {
+        position = ms;
+    }
 
     private void startFullScreenActivity(View view) {
         Log.i(LOG_TAG, "FullScreen enabled");
-        Intent intentList = new Intent(getActivity(), FullscreenActivity.class);
-        startActivity(intentList);
+        Intent intent = new Intent(getActivity(), FullscreenActivity.class);
+        intent.putExtra("uri", uri);
+        intent.putExtra("position", videoView.getCurrentPosition());
+        startActivity(intent);
     }
-
 
     // Find ID corresponding to the name of the resource (in the directory raw).
     public int getRawResIdByName(String resName) {
@@ -142,13 +143,4 @@ public class FragmentVideo extends Fragment {
             videoView.seekTo(position);
         }
     }
-
-    /*@Override
-    public void onStop() {
-        super.onStop();
-        if (loadingDlg != null) {
-            loadingDlg.dismiss();
-            loadingDlg = null;
-        }
-    }*/
 }

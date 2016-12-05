@@ -16,6 +16,12 @@ import android.view.MenuItem;
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    /* Tutaj, przy starcie apki, powinno zostać załadowane z bazy uri ostatniego oglądanego filmiku.
+    * Wtedy jeśli użyszkodnik wybierze od razu fragment z oglądaniem filmiku, to wyświetli się ostatnio oglądany
+    */
+    private String currentlyPlayedVideoUri;
+    private int currentlyPlayedVideoPosition = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,38 +76,35 @@ public class NavDrawerActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void playVideo(String uri, int position) {
+        FragmentVideo fragment = new FragmentVideo();
+        fragment.setUri(uri);
+        fragment.setPosition(position);
+        replaceFragment(fragment);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        //calling the method displayselectedscreen and passing the id of selected menu
-        displaySelectedScreen(item.getItemId());
-        //make this method blank
-        return true;
-    }
-
-
-    private void displaySelectedScreen(int itemId) {
-
-        //creating fragment object
-        Fragment fragment = null;
-
-        //initializing the fragment object which is selected
-        switch (itemId) {
+        switch (item.getItemId()) {
             case R.id.nav_player:
-                fragment = new FragmentVideo();
+                playVideo(currentlyPlayedVideoUri, currentlyPlayedVideoPosition);
                 break;
             case R.id.nav_quit:
                 finish();
                 break;
             case R.id.nav_videos:
-                fragment = new FragmentListVideos();
+                replaceFragment(new FragmentListVideos());
                 break;
             case R.id.nav_fav:
-                fragment = new FragmentListFavourites();
+                replaceFragment(new FragmentListFavourites());
                 break;
         }
+        return true;
+    }
 
-        //replacing the fragment
+    private void replaceFragment(Fragment fragment)
+    {
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_placeholder, fragment);
