@@ -1,5 +1,6 @@
 package com.github.panda3.panda3player;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -26,13 +27,14 @@ public class FragmentVideo extends Fragment {
     private static final String LOG_TAG = "FRAGMENT VIDEO";
     private String uri;
     private long miliseconds = 0;
+    View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.video_fragment, container, false);
+        view = inflater.inflate(R.layout.video_fragment, container, false);
+
         videoView = (VideoView) view.findViewById(R.id.videoView);
 
-        // Set the media controller buttons
         if (mediaController == null) {
             mediaController = new MediaController(getActivity(), true);
 
@@ -98,7 +100,7 @@ public class FragmentVideo extends Fragment {
         Intent intent = new Intent(getActivity(), FullscreenActivity.class);
         intent.putExtra("uri", uri);
         intent.putExtra("position", videoView.getCurrentPosition());
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Find ID corresponding to the name of the resource (in the directory raw).
@@ -110,6 +112,13 @@ public class FragmentVideo extends Fragment {
         return resID;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        position = data.getIntExtra("position", 0);
+        uri = data.getStringExtra("uri");
+        videoView.setVideoURI(Uri.parse(uri));
+        videoView.seekTo(position);
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -127,6 +136,7 @@ public class FragmentVideo extends Fragment {
 
         // Store current position.
         savedInstanceState.putInt("CurrentPosition", videoView.getCurrentPosition());
+        savedInstanceState.putString("CurrentUri", uri);
         videoView.pause();
     }
 
@@ -140,6 +150,8 @@ public class FragmentVideo extends Fragment {
             //Restore the fragment's state here
             // Get saved position.
             position = savedInstanceState.getInt("CurrentPosition");
+            uri = savedInstanceState.getString("CurrentUri");
+            videoView.setVideoURI(Uri.parse(uri));
             videoView.seekTo(position);
         }
     }

@@ -1,5 +1,6 @@
 package com.github.panda3.panda3player;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -78,6 +79,8 @@ public class NavDrawerActivity extends AppCompatActivity
 
     public void playVideo(String uri, int position) {
         FragmentVideo fragment = new FragmentVideo();
+        currentlyPlayedVideoUri = uri;
+        currentlyPlayedVideoPosition = position;
         fragment.setUri(uri);
         fragment.setPosition(position);
         replaceFragment(fragment);
@@ -114,4 +117,6 @@ public class NavDrawerActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
+
+
 }

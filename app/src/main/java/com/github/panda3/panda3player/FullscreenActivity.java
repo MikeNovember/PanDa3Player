@@ -1,6 +1,7 @@
 package com.github.panda3.panda3player;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -94,6 +95,7 @@ public class FullscreenActivity extends AppCompatActivity {
 
     private VideoView videoView;
     private int position = 0;
+    String videoUri;
     private MediaController mediaController;
 
     @Override
@@ -135,7 +137,7 @@ public class FullscreenActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        String videoUri = intent.getStringExtra("uri");
+        videoUri = intent.getStringExtra("uri");
         position = intent.getIntExtra("position", 0);
 
         try {
@@ -201,9 +203,12 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("position", videoView.getCurrentPosition());
+        returnIntent.putExtra("uri", videoUri);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
