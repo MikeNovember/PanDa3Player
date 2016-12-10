@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -28,6 +29,7 @@ public class FragmentVideo extends Fragment {
     private String uri;
     private long miliseconds = 0;
     View view;
+    private ImageView banner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +45,8 @@ public class FragmentVideo extends Fragment {
             // Set MediaController for VideoView
             videoView.setMediaController(mediaController);
         }
+
+        banner = (ImageView) view.findViewById(R.id.banner);
 
         try {
             videoView.setVideoURI(Uri.parse(uri));
@@ -154,5 +158,9 @@ public class FragmentVideo extends Fragment {
             videoView.setVideoURI(Uri.parse(uri));
             videoView.seekTo(position);
         }
+    }
+
+    public void setBannerImage(Uri imageUri) {
+        banner.setImageURI(imageUri);
     }
 }

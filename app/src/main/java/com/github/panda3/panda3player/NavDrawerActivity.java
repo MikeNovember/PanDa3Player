@@ -1,8 +1,12 @@
 package com.github.panda3.panda3player;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -17,11 +21,25 @@ import android.view.MenuItem;
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    /* Tutaj, przy starcie apki, powinno zostać załadowane z bazy uri ostatniego oglądanego filmiku.
-    * Wtedy jeśli użyszkodnik wybierze od razu fragment z oglądaniem filmiku, to wyświetli się ostatnio oglądany
-    */
+    Intent intentBindService;
+    private BannerService myServiceBinder;
+    boolean mBound = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BannerService.MyBinder binder = (BannerService.MyBinder) service;
+            myServiceBinder = binder.getService();
+            mBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            mBound = false;
+        }
+    };
+
     private String currentlyPlayedVideoUri;
     private int currentlyPlayedVideoPosition = 0;
+    private FragmentVideo fragment;
+    private boolean MichalWojcikHack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +48,7 @@ public class NavDrawerActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //toolbar.setTitle("PanDa3 Player");
         setSupportActionBar(toolbar);
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -78,12 +97,13 @@ public class NavDrawerActivity extends AppCompatActivity
     }
 
     public void playVideo(String uri, int position) {
-        FragmentVideo fragment = new FragmentVideo();
+        fragment = new FragmentVideo();
         currentlyPlayedVideoUri = uri;
         currentlyPlayedVideoPosition = position;
         fragment.setUri(uri);
         fragment.setPosition(position);
         replaceFragment(fragment);
+        MichalWojcikHack = true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -98,9 +118,11 @@ public class NavDrawerActivity extends AppCompatActivity
                 break;
             case R.id.nav_videos:
                 replaceFragment(new FragmentListVideos());
+                MichalWojcikHack = false;
                 break;
             case R.id.nav_fav:
                 replaceFragment(new FragmentListFavourites());
+                MichalWojcikHack = false;
                 break;
         }
         return true;
@@ -118,5 +140,8 @@ public class NavDrawerActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
-
+    public void replaceBannerImage(Uri imageUri) {
+        if (MichalWojcikHack)
+            fragment.setBannerImage(imageUri);
+    }
 }
