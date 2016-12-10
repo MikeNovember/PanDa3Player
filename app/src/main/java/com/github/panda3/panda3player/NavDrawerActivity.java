@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,6 +29,7 @@ public class NavDrawerActivity extends AppCompatActivity
     */
     private String currentlyPlayedVideoUri;
     private int currentlyPlayedVideoPosition = 0;
+    private ImageView banner;
 
     Context context;
     Intent intentBindService;
@@ -55,6 +58,7 @@ public class NavDrawerActivity extends AppCompatActivity
         //toolbar.setTitle("PanDa3 Player");
         setSupportActionBar(toolbar);
 
+        banner = (ImageView) findViewById(R.id.banner);
         context = getApplicationContext();
         intentBindService = new Intent(context,BoundService.class);
         bindService(intentBindService, mConnection, Context.BIND_AUTO_CREATE);
@@ -145,5 +149,7 @@ public class NavDrawerActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
-
+    public void replaceBannerImage(Uri imageUri) {
+        banner.setImageURI(imageUri);
+    }
 }
