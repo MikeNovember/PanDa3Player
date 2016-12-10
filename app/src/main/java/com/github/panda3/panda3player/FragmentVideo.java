@@ -161,6 +161,7 @@ public class FragmentVideo extends Fragment {
     }
 
     public void setBannerImage(Uri imageUri) {
+        Log.d("FRAGMENT", "Kurwa weszło");
         banner.setImageURI(imageUri);
     }
 }

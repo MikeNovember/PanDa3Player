@@ -2,6 +2,7 @@ package com.github.panda3.panda3player;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
@@ -15,24 +16,30 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class NavDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IBannerActivity {
 
     Intent intentBindService;
     private BannerService myServiceBinder;
     boolean mBound = false;
+    private IBannerActivity self;
+
     private ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            BannerService.MyBinder binder = (BannerService.MyBinder) service;
-            myServiceBinder = binder.getService();
-            mBound = true;
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
         }
 
-        public void onServiceDisconnected(ComponentName className) {
-            mBound = false;
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BannerService.MyBinder myBinder = (BannerService.MyBinder) service;
+            myServiceBinder = myBinder.getService();
+            mBound = true;
+            myServiceBinder.setParentActivity(self);
         }
     };
 
@@ -40,6 +47,7 @@ public class NavDrawerActivity extends AppCompatActivity
     private int currentlyPlayedVideoPosition = 0;
     private FragmentVideo fragment;
     private boolean MichalWojcikHack = false;
+    private boolean MichalWojcikHack2 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +57,6 @@ public class NavDrawerActivity extends AppCompatActivity
         //toolbar.setTitle("PanDa3 Player");
         setSupportActionBar(toolbar);
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -59,6 +65,26 @@ public class NavDrawerActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        self = this;
+        intentBindService = new Intent(getApplicationContext(), BannerService.class);
+        startService(intentBindService);
+        bindService(intentBindService, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
     @Override
@@ -104,6 +130,7 @@ public class NavDrawerActivity extends AppCompatActivity
         fragment.setPosition(position);
         replaceFragment(fragment);
         MichalWojcikHack = true;
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -140,7 +167,9 @@ public class NavDrawerActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
+    @Override
     public void replaceBannerImage(Uri imageUri) {
+        Log.d("ACTIVITY", "Kurwa weszło");
         if (MichalWojcikHack)
             fragment.setBannerImage(imageUri);
     }
