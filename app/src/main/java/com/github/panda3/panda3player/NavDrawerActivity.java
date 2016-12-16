@@ -1,10 +1,10 @@
 package com.github.panda3.panda3player;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IBannerActivity {
@@ -46,8 +47,7 @@ public class NavDrawerActivity extends AppCompatActivity
     private String currentlyPlayedVideoUri;
     private int currentlyPlayedVideoPosition = 0;
     private FragmentVideo fragment;
-    private boolean MichalWojcikHack = false;
-    private boolean MichalWojcikHack2 = false;
+    private boolean CheckFragmentHack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,13 @@ public class NavDrawerActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        // If we have a saved state then we can restore it now
+        if (savedInstanceState != null && savedInstanceState.getString("CurrentUri") != null) {
+            CheckFragmentHack = savedInstanceState.getBoolean("CheckFragmentHack");
+            playVideo(savedInstanceState.getString("CurrentUri"), savedInstanceState.getInt("CurrentPosition"));
+        }
 
     }
 
@@ -129,7 +136,7 @@ public class NavDrawerActivity extends AppCompatActivity
         fragment.setUri(uri);
         fragment.setPosition(position);
         replaceFragment(fragment);
-        MichalWojcikHack = true;
+        CheckFragmentHack = true;
 
     }
 
@@ -145,11 +152,11 @@ public class NavDrawerActivity extends AppCompatActivity
                 break;
             case R.id.nav_videos:
                 replaceFragment(new FragmentListVideos());
-                MichalWojcikHack = false;
+                CheckFragmentHack = false;
                 break;
             case R.id.nav_fav:
                 replaceFragment(new FragmentListFavourites());
-                MichalWojcikHack = false;
+                CheckFragmentHack = false;
                 break;
         }
         return true;
@@ -170,7 +177,36 @@ public class NavDrawerActivity extends AppCompatActivity
     @Override
     public void replaceBannerImage(Uri imageUri) {
         Log.d("ACTIVITY", "Kurwa weszło");
-        if (MichalWojcikHack)
+        if (CheckFragmentHack){
+            Log.d("ACTIVITY", "Kurwa weszło2");
             fragment.setBannerImage(imageUri);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+            CheckFragmentHack=true;
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+            CheckFragmentHack=true;
+        }
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // Make sure to call the super method so that the states of our views are saved
+        super.onSaveInstanceState(outState);
+        // Save our own state now
+        if(CheckFragmentHack){
+            outState.putBoolean("CheckFragmentHack", CheckFragmentHack);
+            outState.putInt("CurrentPosition", fragment.getPosition());
+            outState.putString("CurrentUri", fragment.getUri());
+        }
     }
 }

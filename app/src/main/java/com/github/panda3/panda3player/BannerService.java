@@ -36,10 +36,12 @@ public class BannerService extends Service {
             @Override
             public void run() {
                 if (mBannerActivity != null) {
-                    if (isImage1)
+                    if (isImage1){
                         mBannerActivity.replaceBannerImage(image2Uri);
-                    else
+                    }
+                    else{
                         mBannerActivity.replaceBannerImage(image1Uri);
+                    }
 
                     isImage1 = !isImage1;
                 }
@@ -49,7 +51,7 @@ public class BannerService extends Service {
         };
 
         image1Uri = Uri.parse("android.resource://" + getPackageName() + "/drawable/banner1");
-        image1Uri = Uri.parse("android.resource://" + getPackageName() + "/drawable/banner2");
+        image2Uri = Uri.parse("android.resource://" + getPackageName() + "/drawable/banner2");
         handler.post(runnable);
     }
 

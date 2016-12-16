@@ -1,6 +1,5 @@
 package com.github.panda3.panda3player;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -49,7 +48,9 @@ public class FragmentVideo extends Fragment {
         banner = (ImageView) view.findViewById(R.id.banner);
 
         try {
-            videoView.setVideoURI(Uri.parse(uri));
+            if(uri != null){
+                videoView.setVideoURI(Uri.parse(uri));
+            }
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();
@@ -97,6 +98,14 @@ public class FragmentVideo extends Fragment {
 
     public void setPosition(int ms) {
         position = ms;
+    }
+
+    public String getUri(){
+        return uri;
+    }
+
+    public int getPosition(){
+        return videoView.getCurrentPosition();
     }
 
     private void startFullScreenActivity(View view) {
@@ -155,8 +164,10 @@ public class FragmentVideo extends Fragment {
             // Get saved position.
             position = savedInstanceState.getInt("CurrentPosition");
             uri = savedInstanceState.getString("CurrentUri");
-            videoView.setVideoURI(Uri.parse(uri));
-            videoView.seekTo(position);
+            if(uri != null){
+                videoView.setVideoURI(Uri.parse(uri));
+                videoView.seekTo(position);
+            }
         }
     }
 
