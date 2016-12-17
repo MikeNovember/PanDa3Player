@@ -9,9 +9,13 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_about" translatable="false">About</string>
+    <string name="action_about" translatable="true">About</string>
     <string name="authors" translatable="true">Authors:</string>
     <string name="fullscreen" translatable="true">FullScreen</string>
+    <string name="others" translatable="true">Others</string>
+    <string name="player" translatable="true">Player</string>
+    <string name="videos" translatable="true">Videos</string>
+    <string name="favourites" translatable="true">Favourites</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="low_battery">Battery is low!</string>

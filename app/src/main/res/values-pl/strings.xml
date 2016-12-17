@@ -6,6 +6,11 @@
     <string name="navigation_drawer_close">Zamknij</string>
     <string name="navigation_drawer_open">Otwórz</string>
     <string name="title_activity_fullscreen">Pełny ekran</string>
+    <string name="action_about" translatable="true">O programie</string>
     <string name="authors" translatable="false">Autorzy:</string>
     <string name="fullscreen" translatable="true">Pełny ekran</string>
+    <string name="others" translatable="true">Inne</string>
+    <string name="player" translatable="true">Odtwarzacz</string>
+    <string name="videos" translatable="true">Filmy</string>
+    <string name="favourites" translatable="true">Ulubione</string>
 </resources>
