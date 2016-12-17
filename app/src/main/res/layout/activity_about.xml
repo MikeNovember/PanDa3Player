@@ -17,12 +17,7 @@
             android:layout_height="wrap_content" android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" android:id="@+id/aboutTitle"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
-    <TextView
-            android:text="Authors:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/aboutAuthors" android:layout_alignParentStart="true"
-            android:layout_below="@+id/aboutTitle" android:textSize="18sp"/>
+
     <TextView
             android:text="Mateusz Niwa"
             android:layout_width="wrap_content"
@@ -66,4 +61,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" android:id="@+id/textView8"/>
+
+    <TextView
+            android:text="@string/authors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/aboutAuthors"
+        android:textSize="18sp"
+        android:layout_below="@+id/aboutTitle"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

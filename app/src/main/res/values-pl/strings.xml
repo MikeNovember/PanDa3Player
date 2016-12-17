@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PanDa3Player</string>
+    <string name="hello_blank_fragment">Witaj pusty fragmencie</string>
+    <string name="low_battery">Niski poziom baterii!</string>
+    <string name="navigation_drawer_close">Zamknij</string>
+    <string name="navigation_drawer_open">Otwórz</string>
+    <string name="title_activity_fullscreen">Pełny ekran</string>
+    <string name="authors" translatable="false">Autorzy:</string>
+    <string name="fullscreen" translatable="true">Pełny ekran</string>
+</resources>
