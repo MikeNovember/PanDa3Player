@@ -1,10 +1,10 @@
 package com.github.panda3.panda3player;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,35 +19,36 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 public class NavDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IBannerActivity {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
+    /* Tutaj, przy starcie apki, powinno zostać załadowane z bazy uri ostatniego oglądanego filmiku.
+    * Wtedy jeśli użyszkodnik wybierze od razu fragment z oglądaniem filmiku, to wyświetli się ostatnio oglądany
+    */
+    private String currentlyPlayedVideoUri;
+    private int currentlyPlayedVideoPosition = 0;
+    private ImageView banner;
+
+    Context context;
     Intent intentBindService;
     private BannerService myServiceBinder;
     boolean mBound = false;
-    private IBannerActivity self;
-
     private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
+            Log.d("ServiceConnection","connected");
+            BannerService.MyBinder binder = (BannerService.MyBinder) service;
+            myServiceBinder = binder.getService();
+            mBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+
             mBound = false;
         }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            BannerService.MyBinder myBinder = (BannerService.MyBinder) service;
-            myServiceBinder = myBinder.getService();
-            mBound = true;
-            myServiceBinder.setParentActivity(self);
-        }
     };
-
-    private String currentlyPlayedVideoUri;
-    private int currentlyPlayedVideoPosition = 0;
-    private FragmentVideo fragment;
-    private boolean CheckFragmentHack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,13 @@ public class NavDrawerActivity extends AppCompatActivity
         //toolbar.setTitle("PanDa3 Player");
         setSupportActionBar(toolbar);
 
+        startService(new Intent(this, DBUpdateService.class));
+
+        banner = (ImageView) findViewById(R.id.banner);
+        context = getApplicationContext();
+        intentBindService = new Intent(context,BannerService.class);
+        bindService(intentBindService, mConnection, Context.BIND_AUTO_CREATE);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -65,33 +73,6 @@ public class NavDrawerActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        // If we have a saved state then we can restore it now
-        if (savedInstanceState != null && savedInstanceState.getString("CurrentUri") != null) {
-            CheckFragmentHack = savedInstanceState.getBoolean("CheckFragmentHack");
-            playVideo(savedInstanceState.getString("CurrentUri"), savedInstanceState.getInt("CurrentPosition"));
-        }
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        self = this;
-        intentBindService = new Intent(getApplicationContext(), BannerService.class);
-        startService(intentBindService);
-        bindService(intentBindService, mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if(mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
     }
 
     @Override
@@ -102,6 +83,12 @@ public class NavDrawerActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, DBUpdateService.class));
     }
 
     @Override
@@ -130,14 +117,12 @@ public class NavDrawerActivity extends AppCompatActivity
     }
 
     public void playVideo(String uri, int position) {
-        fragment = new FragmentVideo();
+        FragmentVideo fragment = new FragmentVideo();
         currentlyPlayedVideoUri = uri;
         currentlyPlayedVideoPosition = position;
         fragment.setUri(uri);
         fragment.setPosition(position);
         replaceFragment(fragment);
-        CheckFragmentHack = true;
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -152,11 +137,9 @@ public class NavDrawerActivity extends AppCompatActivity
                 break;
             case R.id.nav_videos:
                 replaceFragment(new FragmentListVideos());
-                CheckFragmentHack = false;
                 break;
             case R.id.nav_fav:
                 replaceFragment(new FragmentListFavourites());
-                CheckFragmentHack = false;
                 break;
         }
         return true;
@@ -174,39 +157,7 @@ public class NavDrawerActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
-    @Override
     public void replaceBannerImage(Uri imageUri) {
-        Log.d("ACTIVITY", "Kurwa weszło");
-        if (CheckFragmentHack){
-            Log.d("ACTIVITY", "Kurwa weszło2");
-            fragment.setBannerImage(imageUri);
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-            CheckFragmentHack=true;
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-            CheckFragmentHack=true;
-        }
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        // Make sure to call the super method so that the states of our views are saved
-        super.onSaveInstanceState(outState);
-        // Save our own state now
-        if(CheckFragmentHack){
-            outState.putBoolean("CheckFragmentHack", CheckFragmentHack);
-            outState.putInt("CurrentPosition", fragment.getPosition());
-            outState.putString("CurrentUri", fragment.getUri());
-        }
+        banner.setImageURI(imageUri);
     }
 }
