@@ -2,14 +2,6 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/others">
-        <menu>
-            <item
-                    android:id="@+id/nav_quit"
-                    android:icon="@drawable/ic_menu_manage"
-                    android:title="@string/quit"/>
-        </menu>
-    </item>
     <group android:checkableBehavior="single">
         <item
                 android:id="@+id/nav_player"
@@ -24,5 +16,14 @@
                 android:icon="@mipmap/ic_launcher"
                 android:title="@string/favourites"/>
     </group>
+
+    <item android:title="@string/others">
+        <menu>
+            <item
+                    android:id="@+id/nav_quit"
+                    android:icon="@drawable/ic_menu_manage"
+                    android:title="@string/quit"/>
+        </menu>
+    </item>
 
 </menu>
