@@ -16,6 +16,7 @@
     <string name="player" translatable="true">Player</string>
     <string name="videos" translatable="true">Videos</string>
     <string name="favourites" translatable="true">Favourites</string>
+    <string name="quit" translatable="true">Quit</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="low_battery">Battery is low!</string>

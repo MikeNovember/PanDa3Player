@@ -7,7 +7,7 @@
             <item
                     android:id="@+id/nav_quit"
                     android:icon="@drawable/ic_menu_manage"
-                    android:title="Quit"/>
+                    android:title="@string/quit"/>
         </menu>
     </item>
     <group android:checkableBehavior="single">

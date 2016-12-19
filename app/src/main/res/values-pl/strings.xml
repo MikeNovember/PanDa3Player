@@ -13,4 +13,5 @@
     <string name="player" translatable="true">Odtwarzacz</string>
     <string name="videos" translatable="true">Filmy</string>
     <string name="favourites" translatable="true">Ulubione</string>
+    <string name="quit" translatable="true">Zamknij</string>
 </resources>
