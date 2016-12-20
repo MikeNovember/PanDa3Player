@@ -1,6 +1,7 @@
 package com.github.panda3.panda3player;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import com.github.panda3.panda3player.DAO.MovieDao;
+import com.github.panda3.panda3player.manager.DataManager;
 
 /**
  * Created by VuYeK on 24/11/16.
@@ -29,6 +33,9 @@ public class FragmentVideo extends Fragment {
     private long miliseconds = 0;
     View view;
     private ImageView banner;
+
+    private DataManager dataManager;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +68,8 @@ public class FragmentVideo extends Fragment {
 
             public void onPrepared(MediaPlayer mediaPlayer) {
 
+                setPosition(dataManager.getProgress(getUri()));
+
                 videoView.seekTo(position);
                 if (position == 0) {
                     videoView.start();
@@ -87,6 +96,14 @@ public class FragmentVideo extends Fragment {
             @Override
             public void onClick(View view) {
                 startFullScreenActivity(view);
+            }
+        });
+
+        Button button2 = (Button) view.findViewById(R.id.favAdd);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataManager.setFavourites(getUri(),10);
             }
         });
         return view;
@@ -171,6 +188,13 @@ public class FragmentVideo extends Fragment {
         }
     }
 
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        dataManager.setProgress(getUri(),getPosition());
+
+    }
     public void setBannerImage(Uri imageUri) {
         Log.d("FRAGMENT", "Kurwa weszło");
         banner.setImageURI(imageUri);
