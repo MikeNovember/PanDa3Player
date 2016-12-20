@@ -88,23 +88,23 @@ public class MovieDao {
         return list;
     }
 
-//    public List<Movie> getAllFavourite(Integer fav){
-//        List<Movie> list = new ArrayList<>();
-//        String sql = "select _id, url from " + MovieTable.TABLE_NAME + "where " + MovieTable.MovieColumns.FAVOURITE
-//                + " > ? ";
-//        Cursor c = db.rawQuery(sql, new String[]{fav.toString()});
-//        if(c.moveToFirst()) {
-//            do {
-//                Movie movie = new Movie(c.getString(1));
-//                movie.setId(c.getLong(0));
-//                list.add(movie);
-//            } while (c.moveToNext());
-//        }
-//        if(!c.isClosed())
-//            c.close();
-//
-//        return list;
-//    }
+    public List<String> getAllFavourite(Integer fav){
+        List<String> list = new ArrayList<>();
+        String sql = "select _id, url from " + MovieTable.TABLE_NAME + "where " + MovieTable.MovieColumns.FAVOURITE
+                + " > ? ";
+        Cursor c = db.rawQuery(sql, new String[]{fav.toString()});
+        if(c.moveToFirst()) {
+            do {
+                Movie movie = new Movie(c.getString(1));
+                movie.setId(c.getLong(0));
+                list.add(movie.getUri());
+            } while (c.moveToNext());
+        }
+        if(!c.isClosed())
+            c.close();
+
+        return list;
+    }
 
 //        public List<Movie> getAllProgress(){
 //        List<Movie> list = new ArrayList<>();
@@ -140,4 +140,19 @@ public class MovieDao {
         return movie;
     }
 
+    public int getProgress(Movie movie){
+        return movie.getProgress();
+    }
+
+    public void setProgress(Movie movie, int prog){
+        movie.setProgress(prog);
+    }
+
+    public void setFavourites(Movie movie, int fav){
+        movie.setFavourite(fav);
+    }
+
+    public void deleteFromFavourites(Movie movie){
+        setFavourites(movie,0);
+    }
 }

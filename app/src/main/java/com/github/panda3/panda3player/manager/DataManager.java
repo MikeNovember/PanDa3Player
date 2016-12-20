@@ -17,6 +17,8 @@ import com.github.panda3.panda3player.DAO.OpenHelper;
 import com.github.panda3.panda3player.model.Movie;
 import com.github.panda3.panda3player.model.sqlite.DataConstants;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -130,5 +132,91 @@ public class DataManager {
         return studentID;
     }
 
-   
+    public int getProgress(String uri){
+        int progress = 0;
+        try {
+            db.beginTransaction();
+
+
+            progress=movieDao.getProgress(movieDao.find(uri));
+
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            progress = 0;
+        } finally {
+            db.endTransaction();
+        }
+
+        return progress;
+    }
+
+    public void setProgress(String uri, int prog){
+        int progress = 0;
+        try {
+            db.beginTransaction();
+
+
+            movieDao.setProgress(movieDao.find(uri),prog);
+
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            progress = 0;
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public List<String> getFavourite(int fav){
+        List<String> list = new ArrayList<>();
+        try {
+            db.beginTransaction();
+
+
+            list = movieDao.getAllFavourite(fav);
+
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            list = null;
+        } finally {
+            db.endTransaction();
+        }
+
+        return list;
+    }
+
+    public boolean deleteFromFavourites(String uri) {
+        boolean result = false;
+
+        try {
+            db.beginTransaction();
+            Movie movie = movieDao.find(uri);
+            if (movie != null) {
+
+                movieDao.deleteFromFavourites(movie);
+            }
+            db.setTransactionSuccessful();
+            result = true;
+        } catch (SQLException e) {
+            Log.e("XXX", "Błąd przy usuwaniu filmu (transakcję wycofano)", e);
+        } finally {
+            db.endTransaction();
+        }
+        return result;
+    }
+
+    public void setFavourites(String uri, int fav){
+        int progress = 0;
+        try {
+            db.beginTransaction();
+
+
+            movieDao.setFavourites(movieDao.find(uri),fav);
+
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            progress = 0;
+        } finally {
+            db.endTransaction();
+        }
+    }
 }
